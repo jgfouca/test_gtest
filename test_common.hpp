@@ -10,9 +10,11 @@ namespace test_common {
 
 namespace utils {
 
-inline int getTestSeed() {
-  static int seed = []() -> int {
-    int s = testing::GTEST_FLAG(random_seed);
+using seed_t = uint32_t;
+
+inline seed_t getTestSeed() {
+  static seed_t seed = []() -> seed_t {
+    seed_t s = testing::GTEST_FLAG(random_seed);
     if (s == 0) {
       s = std::chrono::high_resolution_clock::now().time_since_epoch().count() % INT32_MAX;
     }
@@ -22,14 +24,14 @@ inline int getTestSeed() {
   return seed;
 }
 
-inline int& randSeedState() {
-  static int s = 0;
+inline seed_t& randSeedState() {
+  static seed_t s = 0;
   return s;
 }
 
 inline void initRandSeed() {
-  int seed = getTestSeed();
-  std::srand(static_cast<unsigned int>(seed));
+  seed_t seed = getTestSeed();
+  std::srand(static_cast<seed_t>(seed));
   randSeedState() = seed;
 }
 
