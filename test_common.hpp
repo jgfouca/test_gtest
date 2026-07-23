@@ -42,14 +42,23 @@ protected:
   }
 
   void SetUp() override {
+    const ::testing::TestInfo* const test_info =
+      ::testing::UnitTest::GetInstance()->current_test_info();
+
+    std::string test_name = "UnknownTest";
+    if (test_info != nullptr) {
+      // Combines SuiteName.TestName (e.g., MyTrackingFixture.IntentionalFailureDemo)
+      test_name = std::string(test_info->test_suite_name()) + "." + test_info->name();
+    }
+
     // 1. Generate random integer dataset
     utils::initRandSeed();
 
     // 2. Format a string describing our dataset state
-    std::string msg = "rand seed: " + std::to_string(utils::getTestSeed());
+    std::string msg = test_name + " => rand seed: " + std::to_string(utils::getTestSeed());
 
     // 3. Keep trace alive for the whole test scope via modern pointer mechanics
-    current_trace = std::make_unique<::testing::ScopedTrace>(__FILE__, __LINE__, msg);
+    current_trace = std::make_unique<::testing::ScopedTrace>("", 0, msg);
   }
 
   void TearDown() override {

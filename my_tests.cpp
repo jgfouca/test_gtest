@@ -23,3 +23,18 @@ TEST_F(MyTrackingFixture, PassingDemo) {
   report_random_num();
   EXPECT_TRUE(true) << "Should never see this!";
 }
+
+// This test WILL FAIL intentionally so you can visually see the dynamic trace output!
+TEST_F(MyTrackingFixture, IntentionalFailureExcDemo) {
+  report_random_num();
+  // Triggering an intentional failure to show the generated trace stream
+  throw std::runtime_error("error");
+}
+
+// This test WILL FAIL intentionally so you can visually see the dynamic trace output!
+TEST_F(MyTrackingFixture, IntentionalFailureSegDemo) {
+  report_random_num();
+  // Triggering an intentional failure to show the generated trace stream
+  std::vector<double> foo;
+  std::cout << foo[12345] << std::endl;
+}
