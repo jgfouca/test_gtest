@@ -18,9 +18,11 @@ Other sources of randomness:
 * randomMatrix
 * getRandomBounds
 * std::shuffle
+* The kokkos random stuff must be tested on some devices
 
 Pros:
 * When compared to permanent fixed seed, coverage is improved since we are testing a new seed every run
+* When a test fails, it should be easy to repeat exactly what it did via --gtest_random_seed
 
 Cons:
 * Every failing test will report random seed even if it's not a randomized test
