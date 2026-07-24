@@ -5,6 +5,7 @@
 #include <Kokkos_Core.hpp>
 #include <Kokkos_Random.hpp>
 #include <KokkosSparse_IOUtils.hpp>
+#include "external/kokkos-kernels/test_common/KokkosKernels_TestUtils.hpp"
 
 #include "test_common.hpp"
 
@@ -12,12 +13,13 @@ using test_common::MyTrackingFixture;
 
 using device_t    = Kokkos::Device<Kokkos::DefaultExecutionSpace, typename Kokkos::DefaultExecutionSpace::memory_space>;
 using view_1di_t  = Kokkos::View<int*, device_t>;
-using sp_matrix_t = KokkosSparse::CrsMatrix<double, int, device_t, void, size_t>;
+using sp_matrix_t = KokkosSparse::CrsMatrix<double, int, device_t, void, int>;
 
 // specs for sparse mtxs
-static constexpr auto N = 100;
-static constexpr auto D = 1;
-
+static constexpr int N = 100;
+static constexpr int D = 1;
+static constexpr int NNZ = 5*N;
+static constexpr int B = 20;
 
 template <typename view_t>
 typename view_t::non_const_value_type sum(const view_t& view)
@@ -64,10 +66,16 @@ inline void report_fill_random()
 
 inline void report_kk_random_sparse_matrix()
 {
-  size_t nnz = 5 * N;
-  auto A        = KokkosSparse::Impl::kk_generate_diagonally_dominant_sparse_matrix<sp_matrix_t>(
-      N, N, nnz, 0, 20, D);
+  int nnz = NNZ; // needs to be non const
+  auto A = KokkosSparse::Impl::kk_generate_diagonally_dominant_sparse_matrix<sp_matrix_t>(N, N, nnz, 0, B, D);
   std::cout << "With seed: " << test_common::utils::getTestSeed() << ", csr sum: " << csr_sum(A) << std::endl;
+}
+
+inline void report_kk_rand_cs_matrix()
+{
+  TestUtils::RandCsMatrix<double, Kokkos::LayoutRight, device_t, int, int> csMat(N, N, 0, 10, false);
+  sp_matrix_t mtx("crs", N, N, csMat.get_vals().size(), csMat.get_vals(), csMat.get_map(), csMat.get_ids());
+  std::cout << "With seed: " << test_common::utils::getTestSeed() << ", csr sum: " << csr_sum(mtx) << std::endl;
 }
 
 // This test WILL FAIL intentionally so you can visually see the dynamic trace output!
@@ -127,5 +135,15 @@ TEST_F(MyTrackingFixture, kk_random_sparse_matrix_1) {
 
 TEST_F(MyTrackingFixture, kk_random_sparse_matrix_2) {
   report_kk_random_sparse_matrix();
+  EXPECT_TRUE(true) << "Should never see this!";
+}
+
+TEST_F(MyTrackingFixture, kk_rand_cs_matrix_1) {
+  report_kk_rand_cs_matrix();
+  EXPECT_TRUE(true) << "Should never see this!";
+}
+
+TEST_F(MyTrackingFixture, kk_rand_cs_matrix_2) {
+  report_kk_rand_cs_matrix();
   EXPECT_TRUE(true) << "Should never see this!";
 }
