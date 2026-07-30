@@ -47,6 +47,13 @@ target_link_libraries(run_my_tests
   Kokkos::kokkoskernels  # Links Mathematical Kernels
 )
 
+# Need to pick up a couple non-standard includes
+target_include_directories(run_my_tests PUBLIC
+  external/kokkos-kernels/test_common
+  external/kokkos-kernels/sparse/unit_test)
+
 # 4. Enable modern CMake test tracking discovery
 include(GoogleTest)
 gtest_discover_tests(run_my_tests)
+
+file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/baselines")
