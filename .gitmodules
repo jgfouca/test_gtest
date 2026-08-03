@@ -3,4 +3,4 @@
 	url = git@github.com:kokkos/kokkos.git
 [submodule "external/kokkos-kernels"]
 	path = external/kokkos-kernels
-	url = git@github.com:kokkos/kokkos-kernels.git
+	url = git@github.com:jgfouca/kokkos-kernels.git

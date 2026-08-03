@@ -29,7 +29,7 @@ static constexpr int NNZ = 5*N;
 static constexpr int B = 20;
 
 // Convert to a single view for easier baseline processing
-auto condense(const sp_matrix_t& A)
+view_1dd_t::host_mirror_type condense(const sp_matrix_t& A)
 {
   // Pull out views from CRS
   auto row_map = A.graph.row_map;
@@ -126,6 +126,14 @@ inline void report_fill_random()
 {
   Kokkos::Random_XorShift64_Pool<Kokkos::DefaultExecutionSpace> pool(test_common::utils::getTestSeed());
   view_1di_t v("v", 10);
+  constexpr bool is_serial =
+    std::is_same<typename view_1di_t::execution_space, Kokkos::Serial>::value;
+
+  if (!is_serial) {
+    std::cout << "Success: View is not on the Serial execution space.\n";
+  } else {
+    std::cout << "Warning: View is on the Serial execution space!\n";
+  }
   Kokkos::fill_random(v, pool, 0, 100);
   auto hv = Kokkos::create_mirror_view(v);
   Kokkos::deep_copy(hv, v);

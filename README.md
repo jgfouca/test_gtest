@@ -36,3 +36,7 @@ Pros:
 Cons:
 * Every failing test will report random seed even if it's not a randomized test
 * segfaulting tests will not report seed
+
+Building:
+* For serial CPU, it's trivial.
+* For lychee/blake, I did: cmake -DKokkos_ARCH_HOPPER90=ON -DCMAKE_CUDA_ARCHITECTURES=90 -DKokkos_ENABLE_AGGRESSIVE_VECTORIZATION=Off -DKokkos_ENABLE_CUDA=On -DKokkos_ENABLE_CUDA_LAMBDA=On -DCMAKE_CXX_COMPILER=$HOME/kokkos/bin/nvcc_wrapper ..

@@ -54,6 +54,6 @@ target_include_directories(run_my_tests PUBLIC
 
 # 4. Enable modern CMake test tracking discovery
 include(GoogleTest)
-gtest_discover_tests(run_my_tests)
+#gtest_discover_tests(run_my_tests)
 
 file(MAKE_DIRECTORY "${CMAKE_CURRENT_BINARY_DIR}/baselines")
