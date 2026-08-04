@@ -23,7 +23,7 @@ using view_1dd_t  = Kokkos::View<double*, device_t>;
 using sp_matrix_t = KokkosSparse::CrsMatrix<double, int, device_t, void, int>;
 
 // specs for sparse mtxs
-static constexpr int NNZ = 5000000;
+static constexpr int NNZ = 10000000;
 static constexpr int PER_ROW = 10;
 static constexpr int N = NNZ/PER_ROW;
 static constexpr int D = 1;
@@ -142,15 +142,15 @@ inline void report_kk_random_sparse_matrix()
 
 inline void report_kk_rand_cs_matrix()
 {
-  TestUtils::RandCsMatrix<double, Kokkos::LayoutRight, device_t, int, int> csMat(N, N, 0, 10, false);
-  sp_matrix_t mtx("crs", N, N, csMat.get_vals().size(), csMat.get_vals(), csMat.get_map(), csMat.get_ids());
+  TestUtils::RandCsMatrix<double, Kokkos::LayoutRight, device_t, int, int> csMat(N/100, N/100, 0, 10, false);
+  sp_matrix_t mtx("crs", N/100, N/100, csMat.get_vals().size(), csMat.get_vals(), csMat.get_map(), csMat.get_ids());
   auto mtxc = condense(mtx);
   process_baseline(mtxc.data(), mtxc.size());
 }
 
 inline void report_kk_random_matrix()
 {
-  auto A = TestUtils::randomMatrix<sp_matrix_t, int>(N, N, NNZ-10, NNZ+10, false);
+  auto A = TestUtils::randomMatrix<sp_matrix_t, int>(N/100, N/100, NNZ/100-10, NNZ/100+10, false);
   auto Ac = condense(A);
   process_baseline(Ac.data(), Ac.size());
 }
