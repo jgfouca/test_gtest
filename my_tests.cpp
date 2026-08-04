@@ -122,10 +122,10 @@ inline void report_mt19937_num()
   process_baseline(&randv, 1);
 }
 
-inline void report_fill_random()
+inline void report_fill_random(bool sabo=false)
 {
   Kokkos::Random_XorShift64_Pool<Kokkos::DefaultExecutionSpace> pool(test_common::utils::getTestSeed());
-  view_1di_t v("v", 10);
+  view_1dd_t v("v", 2000);
   constexpr bool is_serial =
     std::is_same<typename view_1di_t::execution_space, Kokkos::Serial>::value;
 
@@ -134,7 +134,7 @@ inline void report_fill_random()
   } else {
     std::cout << "Warning: View is on the Serial execution space!\n";
   }
-  Kokkos::fill_random(v, pool, 0, 100);
+  Kokkos::fill_random(v, pool, 0, sabo ? 50 : 100);
   auto hv = Kokkos::create_mirror_view(v);
   Kokkos::deep_copy(hv, v);
   process_baseline(hv.data(), hv.size());
