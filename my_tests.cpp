@@ -23,10 +23,11 @@ using view_1dd_t  = Kokkos::View<double*, device_t>;
 using sp_matrix_t = KokkosSparse::CrsMatrix<double, int, device_t, void, int>;
 
 // specs for sparse mtxs
-static constexpr int N = 100;
+static constexpr int NNZ = 5000000;
+static constexpr int PER_ROW = 10;
+static constexpr int N = NNZ/PER_ROW;
 static constexpr int D = 1;
-static constexpr int NNZ = 5*N;
-static constexpr int B = 20;
+static constexpr int B = PER_ROW * 5;
 
 // Convert to a single view for easier baseline processing
 view_1dd_t::host_mirror_type condense(const sp_matrix_t& A)
@@ -124,17 +125,8 @@ inline void report_mt19937_num()
 
 inline void report_fill_random(bool sabo=false)
 {
-  Kokkos::Random_XorShift64_Pool<Kokkos::DefaultExecutionSpace> pool(test_common::utils::getTestSeed());
-  view_1dd_t v("v", 2000);
-  constexpr bool is_serial =
-    std::is_same<typename view_1di_t::execution_space, Kokkos::Serial>::value;
-
-  if (!is_serial) {
-    std::cout << "Success: View is not on the Serial execution space.\n";
-  } else {
-    std::cout << "Warning: View is on the Serial execution space!\n";
-  }
-  Kokkos::fill_random(v, pool, 0, sabo ? 50 : 100);
+  view_1dd_t v("v", 100000000);
+  KokkosKernels::Impl::det_fill_random(v, test_common::utils::getTestSeed(), 0, sabo ? 50 : 100000);
   auto hv = Kokkos::create_mirror_view(v);
   Kokkos::deep_copy(hv, v);
   process_baseline(hv.data(), hv.size());
